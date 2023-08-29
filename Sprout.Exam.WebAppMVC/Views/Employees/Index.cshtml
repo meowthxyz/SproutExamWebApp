@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Sprout.Exam.WebAppMVC.Data.Employee>
+@{
+    string controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    ViewData["Title"] = controllerName;
+}
+
+<h1>@ViewData["Title"]</h1>
+<span>This page should fetch data from server</span>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Create New</a>
+</p>
+
+<table id="employeesTable" class="table table-striped">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.FullName)</th>
+            <th>@Html.DisplayNameFor(model => model.Birthdate)</th>
+            <th>@Html.DisplayNameFor(model => model.Tin)</th>
+            <th>@Html.DisplayNameFor(model => model.EmployeeTypeId)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) 
+        {
+        <tr>
+            <td>@item.FullName</td>
+            <td>@item.Birthdate.ToString("yyyy-MM-dd")</td>
+            <td>@item.Tin</td>
+            <td>@item.EmployeeType.TypeName</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info">Edit</a>
+                    <a asp-action="Calculate" asp-route-id="@item.Id" class="btn btn-primary">Calculate</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

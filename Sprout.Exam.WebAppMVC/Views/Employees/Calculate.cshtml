@@ -1,0 +1,113 @@
+﻿@model Sprout.Exam.WebAppMVC.Models.CalculateViewModel
+
+
+<partial name="_SubPageHeader" />
+<hr />
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Employee.FullName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Employee.FullName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Employee.Birthdate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Employee.Birthdate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Employee.Tin)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Employee.Tin)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Employee.EmployeeTypeId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Employee.EmployeeType.TypeName)
+        </dd>
+    </dl>
+</div>
+
+<div>
+    <div>
+        @if (Model.Employee.EmployeeTypeId == 1)
+        {
+            <div class="form-group">
+                <label asp-for="Regular.BasicMonthlyRate" class="control-label"></label>
+                <input asp-for="Regular.BasicMonthlyRate" class="form-control" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="Regular.Tax" class="control-label"></label>
+                <input asp-for="Regular.Tax" value="@String.Format("{0:P2}", Model.Regular.Tax)" class="form-control" readonly />
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <label asp-for="Contractual.RatePerDay" class="control-label"></label>
+                <input asp-for="Contractual.RatePerDay" class="form-control" readonly />
+            </div>
+        }
+    </div>
+    
+    <form id="CalculateForm">
+    <div>
+        @if (Model.Employee.EmployeeTypeId == 1)
+        {
+            <div class="form-group">
+                <label asp-for="Regular.AbsentDays" class="control-label"></label>
+                <input asp-for="Regular.AbsentDays" class="form-control" type="number" placeholder="@Html.DisplayNameFor(model => model.Regular.AbsentDays)" />
+                <span asp-validation-for="Regular.AbsentDays" class="text-danger"></span>
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <label asp-for="Contractual.WorkedDays" class="control-label"></label>
+                <input asp-for="Contractual.WorkedDays" class="form-control" type="number" placeholder="@Html.DisplayNameFor(model => model.Contractual.WorkedDays)" />
+                <span asp-validation-for="Contractual.WorkedDays" class="text-danger"></span>
+            </div>
+        }
+    </div>
+
+    <a asp-action="Index" class="btn btn-info">Back to List</a> 
+    <button type="submit" class="btn btn-primary">Calculate</button>
+    </form>
+</div>
+
+<div id="ResultForm" class="d-none mt-2">
+    <h1 id="tabelLabel">Employee Calculate Salary</h1>
+    <br />
+    Result: <span id="ResultInfo">{contents}</span>
+</div>
+
+@section scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script type="text/javascript">
+        $(function () {
+            $('#CalculateForm').submit(function (e) {
+                if ($(this).valid()) {
+                    var absentDays = $('#Regular_AbsentDays').val();
+                    var workedDays = $('#Contractual_WorkedDays').val();
+
+                    $.ajax("@Url.Action("CalculateEmployeeSalary", "Employees")/?id=" + @Html.Raw(Model.Employee.Id) + "&absent=" + absentDays + "&workedHours=" + workedDays,   
+                    {
+                        success: function (data, status, xhr) {
+                            // success callback function
+                            $('#ResultForm').removeClass('d-none');
+                            $('#ResultInfo').html(data);
+                        }
+                    });
+
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}

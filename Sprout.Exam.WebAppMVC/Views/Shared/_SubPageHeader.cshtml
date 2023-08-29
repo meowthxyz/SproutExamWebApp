@@ -1,0 +1,8 @@
+﻿@{
+    string controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string actionName = this.ViewContext.RouteData.Values["action"].ToString();
+    ViewData["Title"] = actionName;
+}
+
+<h1>@ViewData["Title"]</h1>
+<h4>@controllerName.TrimEnd('s')</h4>
